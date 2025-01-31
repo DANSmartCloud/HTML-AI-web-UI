@@ -87,4 +87,4 @@ npx http-server
 
 ## 许可证
 
-MIT License
+MPL License 2.0
