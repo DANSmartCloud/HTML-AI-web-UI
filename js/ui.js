@@ -1,3 +1,6 @@
+//ui.js created by 禾云信创
+//TODO: 暗色模式全局适配
+//TODO: 识别AI的思考标签部分
 class UI {
     constructor() {
         // 确保工具类已初始化
@@ -240,6 +243,9 @@ class UI {
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
+                        <button class="set-default-btn px-2 py-1 text-sm text-blue-500 rounded hover:bg-blue-100 dark:hover:bg-blue-900" title="设为默认模型">
+                            <i class="fas fa-star"></i>
+                        </button>
                         <button class="delete-model-btn px-2 py-1 text-sm text-red-500 rounded hover:bg-red-100 dark:hover:bg-red-900" title="删除模型">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -248,10 +254,17 @@ class UI {
                 
                 // 选择模型
                 modelDiv.addEventListener('click', (e) => {
-                    if (!e.target.closest('.delete-model-btn')) {
+                    if (!e.target.closest('.set-default-btn') && !e.target.closest('.delete-model-btn')) {
                         window.chat.setModel(model.name);
                         this.hideModals();
                     }
+                });
+                
+                // 设为默认模型
+                modelDiv.querySelector('.set-default-btn')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.chat.setDefaultModel(model.name);
+                    this.showToast(`已将 ${model.name} 设为默认模型`);
                 });
                 
                 // 删除模型
@@ -407,6 +420,16 @@ class UI {
                 modal.classList.remove('dark');
             }
         });
+
+        // 更新 chatContainer 样式
+        const chatContainer = this.elements.chatContainer;
+        if (chatContainer) {
+            if (this.darkMode) {
+                chatContainer.classList.add('dark');
+            } else {
+                chatContainer.classList.remove('dark');
+            }
+        }
     }
 }
 

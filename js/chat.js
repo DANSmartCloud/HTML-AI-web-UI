@@ -1,3 +1,4 @@
+//chat.js created by 禾云信创
 class Chat {
     constructor() {
         this.messages = [];
@@ -26,6 +27,11 @@ class Chat {
             this.bindEvents();
             await this.loadChats();
             this.initialized = true;
+
+            // 设置默认模型
+            if (this.defaultModel) {
+                this.setModel(this.defaultModel);
+            }
         } catch (error) {
             console.error('Chat初始化失败:', error);
             this.showError('Chat初始化失败: ' + error.message);
@@ -255,6 +261,11 @@ class Chat {
                 chatList.style.opacity = '1';
             }
             
+            // 还原输入框高度
+            elements.userInput.style.height = 'auto';
+            elements.userInput.style.height = elements.userInput.scrollHeight + 'px';
+            elements.userInput.style.transition = 'height 0.3s ease'; // 添加平滑过渡效果
+            
             this.saveMessages();
         }
     }
@@ -264,6 +275,7 @@ class Chat {
         this.showWelcomeMessage(false);
         await this.renderMessage(message);
         this.scrollToBottom();
+
     }
 
     async updateLastMessage(message) {
@@ -288,63 +300,53 @@ class Chat {
     async renderMessage(message) {
         const { messageContainer } = this.elements;
         if (!messageContainer) return;
-        
+
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${message.role}`;
         messageDiv.dataset.messageId = message.time;
-        
+
         // 处理<think>标签
         let processedContent = message.content;
         const thinkMatches = [...message.content.matchAll(/<think>(.*?)<\/think>/gs)];
         const thinkContents = thinkMatches.map(match => match[1]);
-        
+
         thinkMatches.forEach((match, index) => {
             processedContent = processedContent.replace(match[0], `<div class="think-block"><div class="think-marker"></div><div class="think-content">${match[1]}</div></div>`);
         });
-        
+
         const renderedContent = await window.markdownRenderer.render(processedContent);
-        
+
         const html = `
-            <div class="message-avatar ${message.role}">
+            <div class="message-avatar ${message.role} w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0 ${message.role === 'user' ? 'bg-blue-500' : 'bg-green-500'}">
                 <i class="fas fa-${message.role === 'user' ? 'user' : 'robot'}"></i>
             </div>
-            <div class="message-content ${message.role === 'user' ? 'text-right' : ''}">
-                <div class="message-header">
-                    <span class="message-name">${message.role === 'user' ? '用户' : 'AI助手'}</span>
-                    <span class="message-time">${window.utils.formatDate(message.time)}</span>
+            <div class="message-content flex-1 ${message.role === 'user' ? 'bg-blue-100' : 'bg-gray-100'}" style="border-radius: 1ex;">
+                <div class="message-header flex justify-between items-center mb-2">
+                    <div class="message-separator">&nbsp;</div>
+                    <span class="message-time text-sm text-gray-500 dark:text-gray-400">${window.utils.formatDate(message.time)}</span>
+                    <span class="message-name font-medium">${message.role === 'user' ? '用户' : 'AI助手'}</span><div class="message-separator">&nbsp;</div>
                 </div>
-                <div class="message-bubble prose ${message.role === 'user' ? 'ml-auto' : 'mr-auto'} max-w-3xl">
+                <div class="message-bubble prose ${message.role === 'user' ? 'ml-auto' : 'mr-auto'} max-w-3xl p-4 rounded-lg shadow-sm bg-white dark:bg-gray-800 transition-colors duration-300">
                     ${renderedContent}
                 </div>
-                <div class="message-actions ${message.role === 'user' ? 'justify-end' : ''}">
-                    <button class="message-action-btn" onclick="window.chat.copyMessage(this)" title="复制">
+                <div class="message-actions flex ${message.role === 'user' ? 'justify-end' : ''} mt-2 space-x-2">
+                    <button class="message-action-btn bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-gray-300 rounded px-2 py-1 text-sm transition-colors duration-300" onclick="window.chat.copyMessage(this)" title="复制">
                         <i class="fas fa-copy"></i>
                     </button>
+                    ${message.role === 'assistant' ? `
+                    <button class="message-action-btn bg-yellow-200 hover:bg-yellow-300 text-yellow-600 hover:text-yellow-900 dark:bg-yellow-700 dark:hover:bg-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300 rounded px-2 py-1 text-sm transition-colors duration-300" onclick="window.chat.regenerateMessage(this)" title="重答">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    ` : ''}
                     ${message.role === 'user' ? `
-                        <button class="message-action-btn" onclick="window.chat.editMessage(this)" title="编辑">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    ` : `
-                        <button class="message-action-btn" onclick="window.chat.regenerateMessage(this)" title="重新生成">
-                            <i class="fas fa-redo"></i>
-                        </button>
-                        ${message.history?.length > 0 ? `
-                            <div class="history-selector">
-                                <select onchange="window.chat.switchHistory(this)" value="${message.currentVersion === 0 ? '' : (message.currentVersion - 1)}">
-                                    <option value="">当前回复</option>
-                                    ${message.history.map((_, i) => `
-                                        <option value="${i}" ${message.currentVersion === i + 1 ? 'selected' : ''}>历史回复 ${i + 1}</option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                        ` : ''}
-                    `}
+                    <button class="message-action-btn bg-green-200 hover:bg-green-300 text-green-600 hover:text-green-900 dark:bg-green-700 dark:hover:bg-green-600 dark:text-green-400 dark:hover:text-green-300 rounded px-2 py-1 text-sm transition-colors duration-300" onclick="window.chat.editMessage(this)" title="编辑">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    ` : ''}
                 </div>
             </div>
         `;
-        
-        messageDiv.innerHTML = html;
-        messageContainer.appendChild(messageDiv);
+        messageContainer.insertAdjacentHTML('beforeend', html);
     }
 
     scrollToBottom() {
@@ -427,6 +429,7 @@ class Chat {
         await this.renderMessages();
         this.updateChatList();
         this.showWelcomeMessage(this.messages.length === 0);
+
     }
 
     deleteChat(chatId) {
@@ -541,8 +544,8 @@ class Chat {
         const messageDiv = button.closest('.message');
         const content = messageDiv.querySelector('.message-bubble').textContent;
         
-        // 排除<think>标签内容
-        const cleanContent = content.replace(/^.*?think-content.*?$\n?/gm, '');
+        // 保留<think>标签内容，但去掉标签本身
+        const cleanContent = content.replace(/<think>(.*?)<\/think>/gs, '$1');
         
         try {
             await navigator.clipboard.writeText(cleanContent);

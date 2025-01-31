@@ -1,6 +1,6 @@
-# HTML-AI-web-UI  禾云信创AI大模型交互系统
+# AI大模型交互系统
 
-这是一个禾云信创工作室开发的、基于Ollama API的纯静态AI大模型交互前端项目。它提供了一个美观、功能完备的用户界面，用于与Ollama API进行交互。
+这是一个基于Ollama API的纯静态AI大模型交互前端项目。它提供了一个美观、功能完备的用户界面，用于与Ollama API进行交互。
 
 ## 功能特点
 
@@ -23,12 +23,11 @@
 # 如果你有Python 3
 python -m http.server 8000
 
-# 或者使用Node.js的http-server 若需要调试源代码，可以携带参数-c-1
+# 或者使用Node.js的http-server
 npx http-server
 ```
 
-4. 在浏览器中访问 `http://localhost:8000`（或是你的自定义端口号）
-5. Windows环境下，如果你已经安装了node，也可以直接运行项目中的`test.bat`脚本启动项目
+4. 在浏览器中访问 `http://localhost:8000`
 
 ## 使用说明
 
@@ -87,4 +86,4 @@ npx http-server
 
 ## 许可证
 
-MPL License 2.0
+MIT License 
