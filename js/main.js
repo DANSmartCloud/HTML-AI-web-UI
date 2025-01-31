@@ -1,4 +1,3 @@
-//main.js created by 禾云信创
 // 初始化工具类
 window.utils = {
     // 本地存储操作

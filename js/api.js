@@ -1,4 +1,3 @@
-//api.js created by 禾云信创
 class OllamaAPI {
     constructor() {
         this.baseUrl = 'http://localhost:11434';

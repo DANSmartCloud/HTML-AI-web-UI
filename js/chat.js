@@ -1,4 +1,3 @@
-//chat.js created by 禾云信创
 class Chat {
     constructor() {
         this.messages = [];
@@ -27,11 +26,6 @@ class Chat {
             this.bindEvents();
             await this.loadChats();
             this.initialized = true;
-
-            // 设置默认模型
-            if (this.defaultModel) {
-                this.setModel(this.defaultModel);
-            }
         } catch (error) {
             console.error('Chat初始化失败:', error);
             this.showError('Chat初始化失败: ' + error.message);
@@ -322,7 +316,7 @@ class Chat {
             </div>
             <div class="message-content flex-1 ${message.role === 'user' ? 'bg-blue-100' : 'bg-gray-100'}" style="border-radius: 1ex;">
                 <div class="message-header flex justify-between items-center mb-2">
-                    <div class="message-separator">&nbsp;</div>
+                <div class="message-separator">&nbsp;</div>
                     <span class="message-time text-sm text-gray-500 dark:text-gray-400">${window.utils.formatDate(message.time)}</span>
                     <span class="message-name font-medium">${message.role === 'user' ? '用户' : 'AI助手'}</span><div class="message-separator">&nbsp;</div>
                 </div>
@@ -345,8 +339,12 @@ class Chat {
                     ` : ''}
                 </div>
             </div>
+            <div class="message-separator">&nbsp;</div>
         `;
-        messageContainer.insertAdjacentHTML('beforeend', html);
+
+        messageDiv.innerHTML = html;
+        messageContainer.appendChild(messageDiv);
+
     }
 
     scrollToBottom() {
@@ -544,8 +542,8 @@ class Chat {
         const messageDiv = button.closest('.message');
         const content = messageDiv.querySelector('.message-bubble').textContent;
         
-        // 保留<think>标签内容，但去掉标签本身
-        const cleanContent = content.replace(/<think>(.*?)<\/think>/gs, '$1');
+        // 排除<think>标签内容
+        const cleanContent = content.replace(/^.*?think-content.*?$\n?/gm, '');
         
         try {
             await navigator.clipboard.writeText(cleanContent);
