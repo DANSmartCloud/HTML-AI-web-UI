@@ -24,6 +24,7 @@ class UI {
             this.bindEvents();
             await this.loadSettings();
             this.applyTheme();
+            this.selectDefaultModel();
             this.initialized = true;
         } catch (error) {
             console.error('UI初始化失败:', error);
@@ -240,6 +241,9 @@ class UI {
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
+                        <button class="set-default-btn px-2 py-1 text-sm text-blue-500 rounded hover:bg-blue-100 dark:hover:bg-blue-900" title="设为默认模型">
+                            <i class="fas fa-star"></i>
+                        </button>
                         <button class="delete-model-btn px-2 py-1 text-sm text-red-500 rounded hover:bg-red-100 dark:hover:bg-red-900" title="删除模型">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -248,10 +252,17 @@ class UI {
                 
                 // 选择模型
                 modelDiv.addEventListener('click', (e) => {
-                    if (!e.target.closest('.delete-model-btn')) {
+                    if (!e.target.closest('.delete-model-btn') && !e.target.closest('.set-default-btn')) {
                         window.chat.setModel(model.name);
                         this.hideModals();
                     }
+                });
+                
+                // 设为默认模型
+                modelDiv.querySelector('.set-default-btn')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.chat.setDefaultModel(model.name);
+                    this.hideModals();
                 });
                 
                 // 删除模型
@@ -417,6 +428,22 @@ class UI {
                 chatContainer.classList.remove('dark');
             }
         }
+    }
+
+    selectDefaultModel() {
+        const defaultModel = window.utils.cookies.get('defaultModel');
+        if (defaultModel) {
+            window.chat.setDefaultModel(defaultModel);
+            this.updateCurrentModelDisplay(defaultModel);
+        }
+    }
+
+    updateCurrentModelDisplay(modelName) {
+        const { elements } = this;
+        if (elements.currentModel) {
+            elements.currentModel.textContent = modelName;
+        }
+        window.chat.setModel(modelName);
     }
 }
 
