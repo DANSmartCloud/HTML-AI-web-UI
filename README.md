@@ -1,4 +1,4 @@
-# 禾云信创-AI大模型交互系统
+# 禾云信创-静态AI大模型UI
 
 这是一个基于Ollama API的纯静态AI大模型交互前端项目。它提供了一个美观、功能完备的用户界面，用于与Ollama API进行交互。由禾云信创工作室-云云探索者独立完成创建。
 
@@ -27,7 +27,9 @@ python -m http.server 8000
 npx http-server
 ```
 
-4. 在浏览器中访问 `http://localhost:8000`
+4. 在浏览器中访问 `http://localhost:8000`（或是你定义的端口）
+5. 若需要调试页面，可在`npx http-server`命令后添加参数`-c-1`来解决问题，可以尝试在html文件中更新Build号
+6. 在`Windows`环境下，若已经安装`node.js`，可以直接运行项目中的`test.bat`批处理文件启动项目
 
 ## 使用说明
 
