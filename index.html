@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>禾云信创-Ollama Web UI-Build10088</title>
+    <title>禾云信创-静态OllamaAPI交互系统-Build10102</title>
     <style>
         .placeholder {
             height: 3ex; /* 根据需要调整高度 */
@@ -20,6 +20,22 @@
 
         .chat-item-info:hover {
             background-color: #d0d0d08f; /* 鼠标悬停时的背景颜色 */
+        }
+        .think-blocks {
+            @apply bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4 flex-1 bg-gray-100;
+            border-left: 4px solid #9ca3af;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #84848400; /* 可选：添加背景颜色以便于查看 */
+        }
+
+        .think-blocks::before {
+            content: "思考过程：";
+            @apply block text-sm text-gray-400 dark:text-gray-400 mb-2 font-medium width-full text-center;
+        }
+
+        .actual-content {
+            @apply mt-2;
         }
     </style>
     
@@ -76,6 +92,8 @@
         /* 消息样式 */
         .message {
             @apply flex gap-4 p-4 transition-colors duration-300;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
         }
 
         .message.user {
@@ -329,7 +347,7 @@
         <!-- 侧边栏 -->
         <div class="w-64 bg-gray-800 text-white p-4 flex flex-col transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
-                <h1 class="text-xl font-bold sidebar-title">禾云信创-大模型UI</h1>
+                <h1 class="text-xl font-bold sidebar-title">禾云信创-OllamaAPI交互</h1>
                 <button id="settingsBtn" class="text-gray-400 hover:text-white">
                     <i class="fas fa-cog"></i>
                 </button>
@@ -510,4 +528,4 @@
         </div>
     </script>
 </body>
-</html> 
+</html>

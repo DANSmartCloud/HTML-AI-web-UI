@@ -1,6 +1,8 @@
 class OllamaAPI {
     constructor() {
-        this.baseUrl = 'http://localhost:11434';
+        // 从 localStorage 中读取 apiUrl，如果没有则使用默认地址
+        const storedUrl = window.localStorage.getItem('apiUrl');
+        this.baseUrl = storedUrl ? storedUrl : 'http://localhost:11434';
         this.version = null;
     }
 

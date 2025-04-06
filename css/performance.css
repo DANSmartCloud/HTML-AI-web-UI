@@ -1,0 +1,179 @@
+/* 性能优化相关样式 */
+:root {
+    --enable-animations: 1;
+    --enable-transitions: 1;
+}
+
+/* 基于性能等级的优化 */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --enable-animations: 0;
+        --enable-transitions: 0;
+    }
+}
+
+/* 动画优化类 */
+.optimize-performance {
+    /* 使用transform代替position动画 */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+}
+
+/* 条件动画 */
+.conditional-animation {
+    transition: all 300ms ease;
+    transition-property: transform, opacity;
+    /* 根据性能设置启用/禁用动画 */
+    animation-play-state: calc(var(--enable-animations) * 1) ? running : paused;
+}
+
+/* 延迟加载图片容器 */
+.lazy-image {
+    background: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.lazy-image::before {
+    content: "";
+    display: block;
+    padding-top: 56.25%; /* 16:9 比例 */
+}
+
+.lazy-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.lazy-image img.loaded {
+    opacity: 1;
+}
+
+/* 虚拟滚动优化 */
+.virtual-scroll-container {
+    position: relative;
+    overflow-y: auto;
+    contain: strict;
+}
+
+.virtual-scroll-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+}
+
+.virtual-scroll-item {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    pointer-events: auto;
+}
+
+/* 渐进增强的动画效果 */
+@supports (animation-timeline: scroll()) {
+    .scroll-animate {
+        animation: fade-in linear both;
+        animation-timeline: scroll();
+        animation-range: entry 50% cover 50%;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 内存优化 - 降低离屏元素的性能开销 */
+.offscreen {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
+}
+
+/* 优化重排重绘 */
+.optimize-reflow {
+    contain: layout style paint;
+}
+
+/* 优化长列表渲染 */
+.optimize-list {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 50px;
+    contain: style layout;
+}
+
+/* 图片加载优化 */
+.blur-load {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.blur-load::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* 打印样式优化 */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .virtual-scroll-container {
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
+    .virtual-scroll-content {
+        position: static !important;
+        transform: none !important;
+    }
+}
+
+/* 响应式布局优化 */
+@container (max-width: 768px) {
+    .responsive-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 优化GPU加速 */
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* 优化滚动性能 */
+.smooth-scroll {
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}

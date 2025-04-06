@@ -106,23 +106,108 @@
     background: var(--accent-color);
 }
 
+.message {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    @apply flex gap-4 p-4 transition-colors duration-300;
+}
+
+.animate-message {
+    animation: float-in 0.3s ease-out;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.message.user {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+}
+
 .message-bubble {
-    @apply bg-white text-gray-800 rounded-lg p-4 shadow-sm max-w-3xl transition-all duration-300 ease-in-out;
-    width: fit-content; /* 使宽度自适应内容 */
-    word-wrap: break-word; /* 确保内容自动换行 */
+    @apply bg-white text-gray-800 rounded-xl p-4 shadow-md max-w-3xl;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: fit-content;
+    word-wrap: break-word;
+    transform-origin: center bottom;
+    
+}
+
+.message-bubble:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 思考块样式 */
+.think-block {
+    background: rgba(0, 0, 0, 0.03);
+    border-left: 3px solid #9ca3af;
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+}
+
+.think-block::before {
+    content: "思考过程";
+    display: block;
+    font-size: 0.8em;
+    color: #888;
+    margin-bottom: 4px;
+    font-weight: 500;
 }
 
 .message-avatar {
-    @apply w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0;
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0 shadow-sm;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.message-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.message-avatar.user {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    margin-left: 12px;
+    margin-right: 0;
+}
+
+.message-avatar.assistant {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
 }
 
 @keyframes float-in {
     0% {
-        transform: translateY(20px);
+        transform: translateY(15px);
         opacity: 0;
     }
     100% {
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dark .message-bubble {
+    @apply bg-gray-700 text-gray-100;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.dark .message-bubble:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离线模式 - 禾云AI助手</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .offline-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .offline-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .offline-icon {
+            font-size: 4rem;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+
+        .offline-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .offline-message {
+            color: #4b5563;
+            margin-bottom: 2rem;
+        }
+
+        .offline-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f9ff;
+        }
+
+        .offline-status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-content">
+            <div class="offline-icon">
+                <i class="fas fa-wifi-slash"></i>
+            </div>
+            <h1 class="offline-title">您当前处于离线状态</h1>
+            <p class="offline-message">
+                抱歉，我们无法连接到服务器。您的请求已被保存，将在恢复连接后自动重试。
+            </p>
+            <div class="offline-actions">
+                <button class="btn btn-primary" onclick="window.location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                    重试连接
+                </button>
+                <button class="btn btn-secondary" onclick="window.history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                    返回上页
+                </button>
+            </div>
+            <div class="offline-status">
+                <p>
+                    <i class="fas fa-info-circle"></i>
+                    提示：您可以继续浏览已缓存的内容
+                </p>
+                <div id="queueStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查网络状态
+        function updateNetworkStatus() {
+            const status = document.getElementById('queueStatus');
+            const offlineQueue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+            
+            if (offlineQueue.length > 0) {
+                status.innerHTML = `
+                    <p style="margin-top: 1rem;">
+                        <i class="fas fa-clock"></i>
+                        待处理的请求：${offlineQueue.length}个
+                    </p>
+                `;
+            }
+        }
+
+        // 监听网络状态变化
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNetworkStatus();
+        });
+    </script>
+</body>
+</html>

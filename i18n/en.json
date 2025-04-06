@@ -1,0 +1,8 @@
+{
+    "ui_init_failed": "UI initialization failed",
+    "unsupported_file_type": "Unsupported file type",
+    "file_processing_failed": "File processing failed",
+    "invalid_chat_file_format": "Invalid chat file format",
+    "chat_import_success": "Chat imported successfully",
+    "chat_import_failed": "Chat import failed"
+}

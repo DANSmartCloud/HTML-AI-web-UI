@@ -14,7 +14,7 @@ window.utils = {
                 return defaultValue;
             }
         },
-        
+
         set(key, value) {
             try {
                 // 特殊处理apiUrl
@@ -29,7 +29,7 @@ window.utils = {
                 return false;
             }
         },
-        
+
         remove(key) {
             try {
                 localStorage.removeItem(key);
@@ -154,7 +154,7 @@ window.utils = {
         // 创建元素
         createElement(tag, attributes = {}, children = []) {
             const element = document.createElement(tag);
-            
+
             // 设置属性
             Object.entries(attributes).forEach(([key, value]) => {
                 if (key === 'className') {
@@ -198,25 +198,25 @@ window.utils = {
     },
 
     cookies: {
-        set(name, value, days) {
-            const expires = new Date();
-            expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-            document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
-        },
-        
         get(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-            }
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
             return null;
         },
-        
+
+        set(name, value, days) {
+            let expires = '';
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = `; expires=${date.toUTCString()}`;
+            }
+            document.cookie = `${name}=${value}${expires}; path=/`;
+        },
+
         delete(name) {
-            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
         }
     }
-}; 
+};

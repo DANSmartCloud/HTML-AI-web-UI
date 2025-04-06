@@ -358,6 +358,12 @@ class UI {
             elements.apiUrl.value = apiUrl;
         }
         
+        // 使用toast提示当前连接的API地址
+        window.chat.showToast(`当前连接的API地址: ${apiUrl}`);
+        
+        // 更新API实例的baseUrl
+        window.api.setBaseUrl(apiUrl);
+        
         // 加载温度设置
         const temperature = window.utils.storage.get('temperature', 0.7);
         if (elements.temperature) {

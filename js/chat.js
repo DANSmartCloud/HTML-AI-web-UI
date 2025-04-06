@@ -8,9 +8,10 @@ class Chat {
         this.chats = new Map();
         this.initialized = false;
         this.elements = {};
-        this.thinkContents = new Map(); // 存储think标签内容
+        this.thinkContents = new Map();
         this.defaultModel = window.utils.cookies.get('defaultModel');
         this.welcomeMessageElement = document.getElementById('welcomeMessage');
+        this.messageElements = new Map(); // 缓存消息DOM元素
 
         // 等待DOM加载完成后初始化
         if (document.readyState === 'loading') {
@@ -265,6 +266,10 @@ class Chat {
     }
 
     async addMessage(message) {
+        const messageEl = document.createElement('div');
+        messageEl.classList.add('message', message.role);
+        // 动画相关代码已移除
+        
         this.messages.push(message);
         this.showWelcomeMessage(false);
         await this.renderMessage(message);
@@ -295,18 +300,33 @@ class Chat {
         const { messageContainer } = this.elements;
         if (!messageContainer) return;
 
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${message.role}`;
-        messageDiv.dataset.messageId = message.time;
+        let messageDiv = document.querySelector(`[data-message-id="${message.time}"]`);
+        const isNewMessage = !messageDiv;
+
+        if (isNewMessage) {
+            messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.role}`;
+            messageDiv.dataset.messageId = message.time;
+            
+            // 动画相关代码已移除
+            
+            messageContainer.appendChild(messageDiv);
+        }
 
         // 处理<think>标签
         let processedContent = message.content;
         const thinkMatches = [...message.content.matchAll(/<think>(.*?)<\/think>/gs)];
-        const thinkContents = thinkMatches.map(match => match[1]);
-
-        thinkMatches.forEach((match, index) => {
-            processedContent = processedContent.replace(match[0], `<div class="think-block"><div class="think-marker"></div><div class="think-content">${match[1]}</div></div>`);
-        });
+        let thinkContent = '';
+        
+        if (thinkMatches.length > 0) {
+            // 收集所有思考内容
+            thinkContent = `<div class="think-blocks">${
+                thinkMatches.map(match => match[1]).join('<br>')
+            }</div>`;
+            
+            // 移除原文中的think标签
+            processedContent = processedContent.replace(/<think>.*?<\/think>/gs, '');
+        }
 
         const renderedContent = await window.markdownRenderer.render(processedContent);
 
@@ -321,7 +341,10 @@ class Chat {
                     <span class="message-name font-medium">${message.role === 'user' ? '用户' : 'AI助手'}</span><div class="message-separator">&nbsp;</div>
                 </div>
                 <div class="message-bubble prose ${message.role === 'user' ? 'ml-auto' : 'mr-auto'} max-w-3xl p-4 rounded-lg shadow-sm bg-white dark:bg-gray-800 transition-colors duration-300">
-                    ${renderedContent}
+                    ${thinkContent}
+                    <div class="actual-content">
+                        ${renderedContent}
+                    </div>
                 </div>
                 <div class="message-actions flex ${message.role === 'user' ? 'justify-end' : ''} mt-2 space-x-2">
                     <button class="message-action-btn bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-gray-300 rounded px-2 py-1 text-sm transition-colors duration-300" onclick="window.chat.copyMessage(this)" title="复制">
@@ -540,13 +563,13 @@ class Chat {
 
     async copyMessage(button) {
         const messageDiv = button.closest('.message');
-        const content = messageDiv.querySelector('.message-bubble').textContent;
+        // 只获取actual-content类的内容，排除think-blocks
+        const actualContent = messageDiv.querySelector('.actual-content');
         
-        // 排除<think>标签内容
-        const cleanContent = content.replace(/^.*?think-content.*?$\n?/gm, '');
+        if (!actualContent) return;
         
         try {
-            await navigator.clipboard.writeText(cleanContent);
+            await navigator.clipboard.writeText(actualContent.textContent);
             this.showToast('复制成功');
         } catch (error) {
             console.error('复制失败:', error);
@@ -652,4 +675,4 @@ class Chat {
 }
 
 // 创建全局Chat实例
-window.chat = new Chat(); 
+window.chat = new Chat();
